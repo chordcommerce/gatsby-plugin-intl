@@ -1,4 +1,4 @@
-# gatsby-plugin-intl
+# @chordcommerce/gatsby-plugin-intl
 
 Internationalize your Gatsby site.
 
