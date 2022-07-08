@@ -23,15 +23,20 @@ const polyfillIntl = language => {
   }
 }
 
-const withIntlProvider = (intl) => children => {
-  polyfillIntl(intl.language)
+const withIntlProvider = (intl, languageStorageKey) => children => {
+  const language =
+    (languageStorageKey && window.localStorage.getItem(languageStorageKey)) ||
+    intl.language
+  polyfillIntl(language)
   return (
     <IntlProvider
-      locale={intl.language}
+      locale={language}
       defaultLocale={intl.defaultLanguage}
       messages={intl.messages}
     >
-      <IntlContextProvider value={intl}>{children}</IntlContextProvider>
+      <IntlContextProvider value={{ ...intl, language }}>
+        {children}
+      </IntlContextProvider>
     </IntlProvider>
   )
 }
@@ -42,7 +47,7 @@ export default ({ element, props }, pluginOptions) => {
   }
 
   const { pageContext, location } = props
-  const { defaultLanguage } = pluginOptions
+  const { defaultLanguage, languageStorageKey } = pluginOptions
   const { intl } = pageContext
   const { language, languages, redirect, routed, originalPath } = intl
 
@@ -80,5 +85,8 @@ export default ({ element, props }, pluginOptions) => {
         preferDefault(require(GATSBY_INTL_REDIRECT_COMPONENT_PATH))
       )
     : element
-  return withIntlProvider(intl)(renderElement)
+  return withIntlProvider(
+    intl,
+    !isRedirect && languageStorageKey
+  )(renderElement)
 }
