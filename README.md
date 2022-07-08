@@ -55,8 +55,8 @@ plugins: [
       defaultLanguage: `ko`,
       // option to redirect to `/ko` when connecting `/`
       redirect: true,
-      // option to use storage language if redirect is set to false
-      languageStorageKey: "storage-locale",
+      // redirects default language routes to `/`
+      defaultLanguageToRoot: false,
     },
   },
 ]
@@ -130,14 +130,14 @@ If redirect option is `true`, `/` or `/page-2` will be redirected to the user's 
 
 ## Plugin Options
 
-| Option             | Type              | Description                                                                                                                                                                                    |
-| ------------------ | ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| path               | string            | language JSON resource path                                                                                                                                                                    |
-| languages          | string[]          | supported language keys                                                                                                                                                                        |
-| defaultLanguage    | string            | default language when visiting `/page` instead of `ko/page`                                                                                                                                    |
-| redirect           | boolean           | if the value is `true`, `/` or `/page-2` will be redirected to the user's preferred language router. e.g) `/ko` or `/ko/page-2`. Otherwise, the pages will render `defaultLangugage` language. |
-| redirectComponent  | string (optional) | additional component file path to be rendered on with a redirection component for SEO.                                                                                                         |
-| languageStorageKey | string            | local storage key to use to persist language; only used if `redirect` is not `true`                                                                                                            |
+| Option                | Type              | Description                                                                                                                                                                                            |
+| --------------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| path                  | string            | language JSON resource path                                                                                                                                                                            |
+| languages             | string[]          | supported language keys                                                                                                                                                                                |
+| defaultLanguage       | string            | default language when visiting `/page` instead of `ko/page`                                                                                                                                            |
+| redirect              | boolean           | if the value is `true`, `/` or `/page-2` will be redirected to the user's preferred language router. e.g) `/ko` or `/ko/page-2`. Otherwise, the pages will render `defaultLangugage` language.         |
+| redirectComponent     | string (optional) | additional component file path to be rendered on with a redirection component for SEO.                                                                                                                 |
+| defaultLanguageToRoot | boolean           | if the value is `true`, will use the root path for the default language. For example, if the default language is `ko`, all routes with this language will direct to `/page-1` instead of `/ko/page-1`. |
 
 ## Components
 

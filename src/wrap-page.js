@@ -23,20 +23,15 @@ const polyfillIntl = language => {
   }
 }
 
-const withIntlProvider = (intl, languageStorageKey) => children => {
-  const language =
-    (languageStorageKey && window.localStorage.getItem(languageStorageKey)) ||
-    intl.language
-  polyfillIntl(language)
+const withIntlProvider = intl => children => {
+  polyfillIntl(intl.language)
   return (
     <IntlProvider
-      locale={language}
+      locale={intl.language}
       defaultLocale={intl.defaultLanguage}
       messages={intl.messages}
     >
-      <IntlContextProvider value={{ ...intl, language }}>
-        {children}
-      </IntlContextProvider>
+      <IntlContextProvider value={intl}>{children}</IntlContextProvider>
     </IntlProvider>
   )
 }
@@ -47,9 +42,16 @@ export default ({ element, props }, pluginOptions) => {
   }
 
   const { pageContext, location } = props
-  const { defaultLanguage, languageStorageKey } = pluginOptions
+  const { defaultLanguage } = pluginOptions
   const { intl } = pageContext
-  const { language, languages, redirect, routed, originalPath } = intl
+  const {
+    language,
+    languages,
+    redirect,
+    routed,
+    originalPath,
+    defaultLanguageToRoot,
+  } = intl
 
   if (typeof window !== "undefined") {
     window.___gatsbyIntl = intl
@@ -73,20 +75,20 @@ export default ({ element, props }, pluginOptions) => {
         detected = language
       }
 
-      const queryParams = search || ""
-      const newUrl = withPrefix(`/${detected}${originalPath}${queryParams}`)
-      window.localStorage.setItem("gatsby-intl-language", detected)
-      window.location.replace(newUrl)
+      if (!(defaultLanguageToRoot && detected === defaultLanguage)) {
+        const queryParams = search || ""
+        const newUrl = withPrefix(`/${detected}${originalPath}${queryParams}`)
+        window.localStorage.setItem("gatsby-intl-language", detected)
+        window.location.replace(newUrl)
+      }
     }
   }
-  const renderElement = isRedirect
-    ? GATSBY_INTL_REDIRECT_COMPONENT_PATH &&
-      React.createElement(
-        preferDefault(require(GATSBY_INTL_REDIRECT_COMPONENT_PATH))
-      )
-    : element
-  return withIntlProvider(
-    intl,
-    !isRedirect && languageStorageKey
-  )(renderElement)
+  const renderElement =
+    isRedirect && !defaultLanguageToRoot
+      ? GATSBY_INTL_REDIRECT_COMPONENT_PATH &&
+        React.createElement(
+          preferDefault(require(GATSBY_INTL_REDIRECT_COMPONENT_PATH))
+        )
+      : element
+  return withIntlProvider(intl)(renderElement)
 }
